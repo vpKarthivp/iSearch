@@ -1,0 +1,168 @@
+<html>
+<head>
+    <style>
+        body{
+           margin: 0;
+           background-color: #cedf1996;  
+           cursor: pointer;
+           transition: all 0.3s ease; 
+           user-select: none;
+        }
+        .head{
+            color: #000000;
+            font-size: xx-large;
+            font-weight: bold;
+            font-family: cursive;
+            margin: 5px;
+        } 
+        .imgHolder{ 
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            position: relative;
+        }
+        div img{
+            max-width: 100%;
+            max-height: 100%;
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, 0%);
+            top: 0%;
+            left: 50%;
+            position: relative;
+            border-radius: 50px;
+        }   
+        .ImageP{
+            margin-bottom: 10px;
+        }    
+        .btn{
+            font-size: 14px;
+			color: #e2ec77;
+			background-color: #080808;
+			border: 0;
+			outline: 0; 
+			padding: 10px 20px;
+			margin: 10px;
+			cursor: pointer;
+			border-radius: 4px;
+        } 
+        .btnP{
+            
+        }
+        .lCol{
+            position: fixed;
+            left: 6vw;
+            top: 18vw;
+        } 
+        .rCol{
+            /* float: right; */
+            position: relative;
+            /* right: 240px; */
+            margin-left: 500px;
+        }
+        .parDiv{
+           
+        }
+        input{
+        	border: 6px solid #e2ec77;
+            border-radius: 4px;
+            font-size: 26px;
+        }
+    </style>
+    
+</head>
+<body>
+    <div class='parDiv'>
+        <div class='lCol'>
+            <input type="text" class="search" onclick='searchImg' > 
+            <p class='head'>Search Images</p>       
+            <div class="btnP">
+                <button class='btn'>loadmore</button>
+            </div>  
+        </div>
+        <div class='imgHolder rCol'></div>
+    </div>
+</body>
+<script>
+var page = 1,searchV ;
+var i=0;
+var btn = document.getElementsByClassName('btn')[0];
+var searchImg = document.getElementsByClassName('search')[0];
+//var searchV = searchImg.value; 
+    window.onload = function() {          
+        search();
+    };
+
+    
+
+    function search(){
+
+        searchImg.addEventListener('keyup', function(event){
+            if(event.keyCode===13){
+                //searchV = searchImg.innerHTML;
+                event.preventDefault();
+                loadDoc(searchV); 
+                loadmore();               
+            }
+        });
+    }
+
+    function loadmore(){ 
+        i++;page = 2;
+        
+        btn.onclick = function(){
+            btn.innerHTML = "Loading....";
+            loadDoc(page);
+            page++;
+           
+        }
+
+    }
+
+    function loadDoc() {
+        var searchV = searchImg.value; 
+        const xhttp = new XMLHttpRequest();
+
+        
+        xhttp.onload = function() {
+
+            var result =  JSON.parse(this.responseText);
+            console.log(result);
+            
+            result.results.forEach(function(obj, j) {
+                loadImage(obj,j);
+                
+                
+            });
+           
+        }
+        xhttp.open("GET", "https://api.unsplash.com/search/photos?page="+page+"&query="+searchV+"&client_id=e9820714e5bb546f13c47f16b5da945a73d499d41b99609384948302569de0e2");
+        xhttp.send();    
+        console.log(searchV);
+        setTimeout(function(){ btn.innerHTML = "Load More"; }, 500);
+        if(page>=2){
+                    console.log(page)
+                    window.scrollBy(0, 500);
+                
+                }
+        
+    }
+
+    function loadImage(obj1,j){
+        i++;
+				var imgP = document.createElement("div");
+                imgP.className = "ImageP";
+				imgP.id = "images"+i;
+				imgP.innerHTML = '<img class="img" src="'+obj1.urls.regular+'">';			
+				
+                setTimeout(function(){ 
+                    document.getElementsByClassName('imgHolder')[0].append(imgP); 
+                    console.log(new Date());
+                }, 200*j);
+        
+    }
+    
+</script>
+
+</html>
